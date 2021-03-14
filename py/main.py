@@ -1,4 +1,5 @@
 from model.book import Book
+from ui.searchWindow import SearchWindow
 
 def main():
     twoDBookList = [ 
@@ -25,6 +26,8 @@ def main():
         print("Title:", book.title)
         print("Author:", book.author)
         print("Number of Copies Available:", book.numAvailableCopies)
-        print()                
+        print()
+
+    window = SearchWindow()                
 
 main()
