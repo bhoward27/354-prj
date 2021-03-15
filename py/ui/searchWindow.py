@@ -1,5 +1,7 @@
 import tkinter as tk
 
+#   This class allows the user to search for books in the library catalogue by title or by author.
+#   The constructor must be passed a list of Book objects.
 class SearchWindow:
     def __init__(self, bookList):
         #   Set up mainWindow.
@@ -11,7 +13,7 @@ class SearchWindow:
         self.resultsFrame = tk.Frame(self.mainWindow)
         self.resultsLabelRow = tk.Frame(self.resultsFrame)
         
-        #   Initialize search variables.
+        #   Initialize variables.
         self.searchOption = tk.IntVar()
         self.searchOption.set(0)
         self.searchEntry = tk.StringVar()

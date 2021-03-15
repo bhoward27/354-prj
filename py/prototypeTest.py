@@ -22,12 +22,6 @@ def main():
     for book in twoDBookList:
         bookList.append(Book(book))
 
-    for book in bookList:
-        print("Title:", book.title)
-        print("Author:", book.author)
-        print("Number of Copies Available:", book.numAvailableCopies)
-        print()
-
-    window = SearchWindow(bookList)                
+    window = SearchWindow(bookList)               
 
 main()
