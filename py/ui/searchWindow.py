@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class SearchWindow:
     def __init__(self, bookList):
         #   Set up mainWindow.
@@ -38,7 +37,7 @@ class SearchWindow:
                                                 variable = self.searchOption, value = 0)
         self.searchAuthorRb = tk.Radiobutton(self.searchFrame, text = "Author", 
                                                 variable = self.searchOption, value = 1)
-        self.searchBox = tk.Entry(self.searchFrame, width = 10, textvariable = self.searchEntry)
+        self.searchBox = tk.Entry(self.searchFrame, width = 40, textvariable = self.searchEntry)
         self.searchButton = tk.Button(self.searchFrame, text = "Search", command = self.search)
 
     def packSearchFrameWidgets(self):
@@ -59,20 +58,44 @@ class SearchWindow:
         self.resultsNumCopiesLabel.pack(side = "left")
 
     def search(self):
-        copiesWidth = 18
-        titleWidth = 80
-        authorWidth = self.resultsRowWidth - copiesWidth - titleWidth
+        self.resultsList.delete(0, self.resultsList.size())
+        self.copiesWidth = 18
+        self.titleWidth = 80
+        self.authorWidth = self.resultsRowWidth - self.copiesWidth - self.titleWidth
 
         title = "TITLE"
-        title = title + (titleWidth - len(title)) * " "
+        title = title + (self.titleWidth - len(title)) * " "
         author = "AUTHOR"
-        author = author + (authorWidth - len(author)) * " "
+        author = author + (self.authorWidth - len(author)) * " "
         self.resultsList.insert(1, title + author + "# COPIES AVAILABLE")
         self.resultsList.insert(2, "")
 
-        i = 3
-        for book in self.bookList:
-            title = book.title + (titleWidth - len(book.title)) * " "
-            author = book.author + (authorWidth - len(book.author)) * " "
-            self.resultsList.insert(i, title + author + str(book.numAvailableCopies))
-            i += 1
+        searchEntry = self.searchEntry.get()
+        if searchEntry == "":
+            self.showNoResults()
+        else:
+            i = 3
+            if self.searchOption.get() == 0:
+                for book in self.bookList:
+                    if searchEntry.lower() in book.title.lower():
+                        self.insert(book, i)
+                        i += 1
+            elif self.searchOption.get() == 1:
+                for book in self.bookList:
+                    if searchEntry.lower() in book.author.lower():
+                        self.insert(book, i)
+                        i += 1
+
+            if i == 3:
+                self.showNoResults()
+            
+    def showNoResults(self):
+        noResult = "No Search Results"
+        numSpaces = (self.resultsRowWidth - len(noResult)) // 2
+        space = numSpaces * " "
+        self.resultsList.insert(3, space + noResult + space)
+
+    def insert(self, book, i):
+        title = book.title + (self.titleWidth - len(book.title)) * " "
+        author = book.author + (self.authorWidth - len(book.author)) * " "
+        self.resultsList.insert(i, title + author + str(book.numAvailableCopies))
