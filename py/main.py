@@ -28,6 +28,6 @@ def main():
         print("Number of Copies Available:", book.numAvailableCopies)
         print()
 
-    window = SearchWindow()                
+    window = SearchWindow(bookList)                
 
 main()

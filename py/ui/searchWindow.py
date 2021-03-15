@@ -1,7 +1,8 @@
 import tkinter as tk
 
+
 class SearchWindow:
-    def __init__(self):
+    def __init__(self, bookList):
         #   Set up mainWindow.
         self.mainWindow = tk.Tk()
         self.mainWindow.title("Search Library Catalogue")
@@ -15,21 +16,18 @@ class SearchWindow:
         self.searchOption = tk.IntVar()
         self.searchOption.set(0)
         self.searchEntry = tk.StringVar()
-
+        self.bookList = bookList
+        self.resultsRowWidth = 150
+        
         self.createSearchFrameWidgets()
         self.packSearchFrameWidgets()
 
-        self.resultsTitleLabel = tk.Label(self.resultsLabelRow, text = "Title\t\t\t\t")
-        self.resultsAuthorLabel = tk.Label(self.resultsLabelRow, text = "Author\t\t\t")
-        self.resultsNumCopiesLabel = tk.Label(self.resultsLabelRow, text = "Number of Copies Available")
-        
-        self.resultsTitleLabel.pack(side = "left")
-        self.resultsAuthorLabel.pack(side = "left")
-        self.resultsNumCopiesLabel.pack(side = "left")
+        self.resultsList = tk.Listbox(self.resultsFrame, height = 22, width = self.resultsRowWidth, 
+                                        font = "Courier")
+        self.resultsList.pack()
 
         #   Pack frames.
         self.searchFrame.pack()
-        self.resultsLabelRow.pack()
         self.resultsFrame.pack()
 
         tk.mainloop()
@@ -50,5 +48,31 @@ class SearchWindow:
         self.searchBox.pack(side = "left")
         self.searchButton.pack(side = "left")
 
+    def createResultsLabelRowWidgets(self):
+        self.resultsTitleLabel = tk.Label(self.resultsLabelRow, text = "Title\t\t\t\t")
+        self.resultsAuthorLabel = tk.Label(self.resultsLabelRow, text = "Author\t\t\t")
+        self.resultsNumCopiesLabel = tk.Label(self.resultsLabelRow, text = "Number of Copies Available")
+
+    def packResultsLabelRowWidgets(self):
+        self.resultsTitleLabel.pack(side = "left")
+        self.resultsAuthorLabel.pack(side = "left")
+        self.resultsNumCopiesLabel.pack(side = "left")
+
     def search(self):
-        print(str(self.searchEntry))
+        copiesWidth = 18
+        titleWidth = 80
+        authorWidth = self.resultsRowWidth - copiesWidth - titleWidth
+
+        title = "TITLE"
+        title = title + (titleWidth - len(title)) * " "
+        author = "AUTHOR"
+        author = author + (authorWidth - len(author)) * " "
+        self.resultsList.insert(1, title + author + "# COPIES AVAILABLE")
+        self.resultsList.insert(2, "")
+
+        i = 3
+        for book in self.bookList:
+            title = book.title + (titleWidth - len(book.title)) * " "
+            author = book.author + (authorWidth - len(book.author)) * " "
+            self.resultsList.insert(i, title + author + str(book.numAvailableCopies))
+            i += 1
