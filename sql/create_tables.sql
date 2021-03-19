@@ -50,8 +50,11 @@ CREATE TABLE CD (
 CREATE TABLE Reservation(
     item_ID CHAR(9) NOT NULL,
     reserveDate DATE NOT NULL,
-    lib_card_num CHAR(7),
-    queueNum TINYINT
+    lib_card_num CHAR(7) NOT NULL,
+    queueNum TINYINT NOT NULL,
+    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
+    FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
+    CONSTRAINT PK_Reserve PRIMARY KEY (item_ID, lib_card_num)
 );
 
 CREATE TABLE LoanedItem(
@@ -60,4 +63,32 @@ CREATE TABLE LoanedItem(
     timestame TIME,
     PRIMARY KEY (borrow_ID),
     FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num)
+);
+
+CREATE TABLE Authors(
+    author VARCHAR(63) NOT NULL,
+    item_ID CHAR(9) NOT NULL,
+    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
+    CONSTRAINT PK_Author PRIMARY KEY (author, item_ID)
+);
+
+CREATE TABLE DVDActors(
+    actor VARCHAR(63) NOT NULL,
+    item_ID CHAR(9) NOT NULL,
+    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
+    CONSTRAINT PK_DVDActor PRIMARY KEY (actor, item_ID)
+);
+
+CREATE TABLE DVDDirectors(
+    director VARCHAR(63) NOT NULL,
+    item_ID CHAR(9) NOT NULL,
+    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
+    CONSTRAINT PK_DVDDirector PRIMARY KEY (director, item_ID)
+);
+
+CREATE TABLE CDArtist(
+    artist VARCHAR(63) NOT NULL,
+    item_ID CHAR(9) NOT NULL,
+    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
+    CONSTRAINT PK_CDArtist PRIMARY KEY (artist, item_ID)
 );
