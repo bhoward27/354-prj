@@ -92,3 +92,17 @@ CREATE TABLE CDArtist(
     FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
     CONSTRAINT PK_CDArtist PRIMARY KEY (artist, item_ID)
 );
+
+CREATE TABLE ItemGenre(
+    genre VARCHAR(15) NOT NULL,
+    item_ID CHAR(9) NOT NULL,
+    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
+    CONSTRAINT PK_ItemGenre PRIMARY KEY (genre, item_ID)
+);
+
+CREATE TABLE MemberPhone(
+    lib_card_num CHAR(7) NOT NULL,
+    phone BIGINT NOT NULL, -- 10 Digit Phone # = 2^34. BIGINT = 2^(63)-1
+    FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
+    CONSTRAINT PK_MemberPhone PRIMARY KEY (lib_card_num , phone)
+);
