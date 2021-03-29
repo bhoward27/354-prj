@@ -1,6 +1,7 @@
 import mysql.connector
 from pathlib import Path
 from os import chdir
+from model.executor import Executor
 
 mydb = mysql.connector.connect(
     host = "localhost",
@@ -62,3 +63,6 @@ for db in my_cursor:
 
 
 my_cursor.close()
+
+exec = Executor()
+print(exec.isValidTableName("Member"))
