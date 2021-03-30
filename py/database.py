@@ -2,6 +2,7 @@ import mysql.connector
 from pathlib import Path
 from os import chdir
 from model.executor import Executor
+THIS_FILES_FOLDER = "py"
 
 # mydb = mysql.connector.connect(
 #     host = "localhost",
@@ -72,4 +73,9 @@ exec = Executor()
 #     records.append((preId + str(i), 13.99, 1, 1, None, 'Shrek', 'DreamWorks', None, None, None))
 
 # exec.insert("Item", records)
-exec.delete("Item", "item_id = '0000900047'")
+# exec.delete("Item", "item_id = '0000900047'")
+chdir('..')
+path = str(Path.cwd()) + '/sql/create_tables.sql'
+# print(path)
+exec.executeFile(path)
+chdir(THIS_FILES_FOLDER)

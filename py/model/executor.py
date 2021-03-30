@@ -71,6 +71,15 @@ class Executor:
         self.cursor.execute(sql)
         self.db.commit()
 
+    def executeFile(self, path):
+        with open(path, 'r') as sqlFile:
+            results = self.cursor.execute(sqlFile.read(), multi = True)
+
+            # When multi = True, one must iterate through the results to execute the queries.
+            for result in results:
+                pass    # Nothing needs to be "done"--just iterate through the results.
+            self.db.commit()
+
     @staticmethod
     def hasTuple(x):
         return any(isinstance(i, tuple) for i in x)

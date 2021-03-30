@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS test_project;
-CREATE DATABASE test_project;
-USE test_project;
+DROP DATABASE IF EXISTS test_project6;
+CREATE DATABASE test_project6;
+USE test_project6;
 
 CREATE TABLE Member(
     lib_card_num CHAR(10) NOT NULL,
