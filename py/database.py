@@ -65,8 +65,10 @@ from model.executor import Executor
 # my_cursor.close()
 
 exec = Executor()
-print(exec.isValidTableName("Member"))
 
-record = ('0000900006', 13.99, 1, 1, None, 'Shrek', 'DreamWorks', None, None, None)
+preId = '000090004'
+records = []
+for i in range(1, 10):
+    records.append((preId + str(i), 13.99, 1, 1, None, 'Shrek', 'DreamWorks', None, None, None))
 
-exec.insert("Item", record)
+exec.insert("Item", records)
