@@ -4,21 +4,34 @@ from os import chdir
 
 class Executor:
     def __init__(self):
-        self.db = self.connectToDatabase()
-        self.cursor = self.db.cursor()
-        self.__setValidTableNames()
+        self.host = "localhost"
+        self.user = "root"
+        self.passwd = "password"
+        self.database = "project"
+
+        try:
+            self.db = self.connectToDatabase()
+        except mysql.connector.errors.ProgrammingError:
+            self.db = mysql.connector.connect(
+                host = self.host,
+                user = self.user,
+                passwd = self.passwd,
+            )
+            self.cursor = self.db.cursor()
+        else:
+            self.cursor = self.db.cursor()
+            self.__setValidTableNames()
 
     def __del__(self):
         self.cursor.close()
         self.db.disconnect()
     
-    @staticmethod
-    def connectToDatabase():
+    def connectToDatabase(self):
         return mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            passwd = "Fattest5!",
-            database = "test_project",
+            host = self.host,
+            user = self.user,
+            passwd = self.passwd,
+            database = self.database,
         )
     
     def __setValidTableNames(self):

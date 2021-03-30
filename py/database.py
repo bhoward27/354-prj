@@ -66,16 +66,14 @@ THIS_FILES_FOLDER = "py"
 # my_cursor.close()
 
 exec = Executor()
-
-# preId = '000090005'
-# records = []
-# for i in range(1, 10):
-#     records.append((preId + str(i), 13.99, 1, 1, None, 'Shrek', 'DreamWorks', None, None, None))
-
-# exec.insert("Item", records)
-# exec.delete("Item", "item_id = '0000900047'")
 chdir('..')
 path = str(Path.cwd()) + '/sql/create_tables.sql'
-# print(path)
 exec.executeFile(path)
 chdir(THIS_FILES_FOLDER)
+exec = Executor()
+preId = '000090006'
+records = []
+for i in range(1, 10):
+    records.append((preId + str(i), 13.99, 1, 1, None, 'Shrek', 'DreamWorks', None, None, None))
+exec.insert("Item", records)
+exec.delete("Item", "item_id = '0000900047'")
