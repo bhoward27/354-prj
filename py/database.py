@@ -66,9 +66,10 @@ from model.executor import Executor
 
 exec = Executor()
 
-preId = '000090004'
-records = []
-for i in range(1, 10):
-    records.append((preId + str(i), 13.99, 1, 1, None, 'Shrek', 'DreamWorks', None, None, None))
+# preId = '000090005'
+# records = []
+# for i in range(1, 10):
+#     records.append((preId + str(i), 13.99, 1, 1, None, 'Shrek', 'DreamWorks', None, None, None))
 
-exec.insert("Item", records)
+# exec.insert("Item", records)
+exec.delete("Item", "item_id = '0000900047'")

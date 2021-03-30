@@ -28,14 +28,24 @@ class Executor:
         for result in results:
             self.validTableNames.append(result[0].lower())
 
-    def insert(self, tableName, values):
+    def __validateTableName(self, tableName):
         if not self.isValidTableName(tableName):
             print("ValueError: tableName '" + tableName + "' is invalid.")
             raise ValueError
-        
+
+    def __validateRecordType(self, record):
+        if not isinstance(record, tuple) or self.hasTuple(record):
+            print("TypeError: record = ", record, ", but needs to be a flat tuple.", sep = "")
+            raise TypeError
+
+    def __validateValuesType(self, values):
         if not (isinstance(values, tuple) or isinstance(values, list)):
             print("TypeError: values must be a tuple, list of tuples, or tuple of tuples.")
             raise TypeError
+
+    def insert(self, tableName, values):
+        self.__validateTableName(tableName)
+        self.__validateValuesType(values)
 
         if self.hasTuple(values):
             for record in values:
@@ -46,9 +56,7 @@ class Executor:
             self.db.commit()
 
     def __insert(self, tableName, record):
-        if not isinstance(record, tuple) or self.hasTuple(record):
-            print("TypeError: record = ", record, ", but needs to be a flat tuple.", sep = "")
-            raise TypeError
+        self.__validateRecordType(record)
 
         sql = "INSERT INTO " + tableName + " VALUES ("
         numColumns = len(record)
@@ -56,6 +64,12 @@ class Executor:
             sql += "%s, "
         sql = sql[: len(sql) - 2] + ");"
         self.cursor.execute(sql, record)
+
+    def delete(self, tableName, whereCondition):
+        self.__validateTableName(tableName)
+        sql = "DELETE FROM " + tableName + " WHERE " + whereCondition + ";"
+        self.cursor.execute(sql)
+        self.db.commit()
 
     @staticmethod
     def hasTuple(x):
