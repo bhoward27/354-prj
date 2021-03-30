@@ -1,21 +1,26 @@
 body {
-    background: #2a2a2a;
-    color: #ffffff;
-    margin-top: 5rem;
+  background: #2a2a2a;
+  color: #ffffff;
+  margin-top: 5rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    color: #ffffff;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #ffffff;
 }
 
 .content-section {
-    background: #202020;
-    padding: 10px 20px;
-    border: 1px solid #a0a0a0;
-    border-radius: 3px;
-    margin-bottom: 20px;
+  background: #202020;
+  padding: 10px 20px;
+  border: 1px solid #a0a0a0;
+  border-radius: 3px;
+  margin-bottom: 20px;
 }
 
 .form-group {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
