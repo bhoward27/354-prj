@@ -3,6 +3,7 @@ from pathlib import Path
 from os import chdir
 
 class Executor:
+    '''This class provides basic functionality (insert, delete, executeFile) for executing SQL statements.'''
     def __init__(self):
         self.host = "localhost"
         self.user = "root"
@@ -11,11 +12,17 @@ class Executor:
 
         try:
             self.db = self.connectToDatabase()
+
+        # This error will arise if the database "project" does not yet exist.
         except mysql.connector.errors.ProgrammingError:
             self.db = mysql.connector.connect(
                 host = self.host,
                 user = self.user,
                 passwd = self.passwd,
+                # Since "project" does not yet exist, don't specify it when connecting.
+                # Note that this limits the capabilities of Executor to only being able to use
+                # the executeFile method. If need to use Executor's other methods, one must
+                # create the project database, then instantiate (or re-instantiate) the executor.
             )
             self.cursor = self.db.cursor()
         else:
@@ -27,6 +34,7 @@ class Executor:
         self.db.disconnect()
     
     def connectToDatabase(self):
+        '''Returns a MySQL cursor.'''   # With the cursor, any sql statement can be executed.
         return mysql.connector.connect(
             host = self.host,
             user = self.user,
@@ -35,6 +43,9 @@ class Executor:
         )
     
     def __setValidTableNames(self):
+        # Note that if a table is dropped or deleted after the executor was instantiated, it won't
+        # be reflected in self.validTableNames.
+
         self.validTableNames = []
         self.cursor.execute("SHOW TABLES;")
         results = self.cursor.fetchall()
@@ -57,6 +68,7 @@ class Executor:
             raise TypeError
 
     def insert(self, tableName, values):
+        '''Inserts the tuple(s) "values" into the table "tableName".'''
         self.__validateTableName(tableName)
         self.__validateValuesType(values)
 
@@ -69,6 +81,7 @@ class Executor:
             self.db.commit()
 
     def __insert(self, tableName, record):
+        '''Inserts the single tuple "record" into the table "tableName".'''
         self.__validateRecordType(record)
 
         sql = "INSERT INTO " + tableName + " VALUES ("
@@ -79,12 +92,14 @@ class Executor:
         self.cursor.execute(sql, record)
 
     def delete(self, tableName, whereCondition):
+        '''Executes SQL statement of this form: DELETE FROM <tableName> <whereCondition>;'''
         self.__validateTableName(tableName)
         sql = "DELETE FROM " + tableName + " WHERE " + whereCondition + ";"
         self.cursor.execute(sql)
         self.db.commit()
 
     def executeFile(self, path):
+        '''Executes the statements in the SQL file located at path.'''
         with open(path, 'r') as sqlFile:
             results = self.cursor.execute(sqlFile.read(), multi = True)
 
@@ -95,7 +110,11 @@ class Executor:
 
     @staticmethod
     def hasTuple(x):
+        '''Returns true if x contains one or more tuples and false otherwise.'''
         return any(isinstance(i, tuple) for i in x)
 
     def isValidTableName(self, tableName):
+        '''Returns true iff. tableName is a table that exists in the project database.'''
+        # This method will be incorrect if tables have been dropped, added, or modified after
+        # the executor was instantiated.
         return tableName.lower() in self.validTableNames
