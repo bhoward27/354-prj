@@ -1,5 +1,8 @@
 .DS_Store
-.*exe
+*.exe
+.vscode
+
+
 
 # What comes below was copied from the internet. 
 # Not sure how much is necessary but I figured that it's better to have too much in this file than
