@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Books</h1>
+    {% for book in books %}
+        <article class="media content-section">
+            <div class="media-body">
+                {% for i in range(cols|length) %}
+                    <div class>
+                        {{ cols[i] }}: {{ book[i] }}
+                    </div>
+                {% endfor %}
+                <div class>Title: {{ book[cols.index('title')] }}</div>
+                <div class>Publisher: {{ book[cols.index('publisher')] }}</div>
+            </div>
+        </article>
+    {% endfor %}
+{% endblock content %}

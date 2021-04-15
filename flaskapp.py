@@ -20,8 +20,8 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         # TODO: run this in executor.py
-        sql = "SELECT MAX(lib_card_num) from Member"
-        exec.cursor.execute(sql)
+        query = "SELECT MAX(lib_card_num) from Member"
+        exec.cursor.execute(query)
         for row in exec.cursor:
             print(row)
             lib_card_num = int(row[0])+1
@@ -55,6 +55,24 @@ def login():
         else:
             flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', title='Login', form=form)
+
+
+@app.route('/books')
+def books():
+    query = """
+SELECT book.ISBN13, item.*
+FROM project.book
+JOIN project.item ON item.item_id=book.item_id
+"""
+
+    exec.cursor.execute(query)
+    
+    print(exec.cursor.column_names)
+    print(exec.cursor.column_names.index('ISBN13'))
+    # for book in exec.cursor:
+    #     print(book)
+    return render_template('books.html', title='Books',
+                           cols=exec.cursor.column_names, books=exec.cursor)
 
 
 if __name__ == '__main__':
