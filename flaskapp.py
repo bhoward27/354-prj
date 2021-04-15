@@ -31,7 +31,7 @@ def register():
         if not form.mName.data:
             form.mName.data = None
         status, fines = 1, 0
-        
+
         exec.insert('Member', (str(lib_card_num), form.address.data,
                     form.email.data, form.password.data, status, fines,
                     form.fName.data, form.mName.data, form.lName.data))
@@ -44,9 +44,16 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        # TODO: Check login data from sql database
+        if form.email.data == 'a@a.a' and form.password.data == 'a':
+            flash('You have been logged in!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Login Unsuccessful. Please check username and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 
