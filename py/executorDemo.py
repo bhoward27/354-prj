@@ -26,7 +26,9 @@ chdir(THIS_FILES_FOLDER)
 exec = Executor()
 
 # INSERT INTO Item ("0000000016", 13.99, 1, 1, NULL, "Shrek", "DreamWorks", "English", NULL, NULL);
-exec.insert("Item", ("0000000016", 13.99, 1, 1, None, "Shrek", "DreamWorks", "English", None, None))
+isbn = "978-0-533-3754"
+exec.insert("Book (ISBN13, price, title, publisher, language)", (isbn, 24.00, "Ishmael", "Bantam Books", "English"))
+exec.insert("Item (bookISBN)", (isbn,))
 # It is also possible to pass as the second argument a tuple of tuples or list of tuples.
 # In that case, it will insert multiple records in one go.
 
