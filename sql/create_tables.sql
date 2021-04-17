@@ -16,39 +16,57 @@ CREATE TABLE Member(
 );
 
 CREATE TABLE Item (
-    item_ID CHAR(10) NOT NULL,
-    price DEC(5, 2) NOT NULL,
+    item_ID     CHAR(10) NOT NULL,
+    bookISBN    CHAR(14) NULL,
+    cdISSN      CHAR(12) NULL,
+    dvdISSN     CHAR(12) NULL,
     quantity TINYINT NOT NULL,
     availability TINYINT NOT NULL,
+
+    PRIMARY KEY (item_ID),
+    FOREIGN KEY (bookISBN) REFERENCES Book(ISBN13),
+    FOREIGN KEY (cdISSN) REFERENCES CD(ISSN),
+    FOREIGN KEY (dvdISSN) REFERENCES DVD(ISSN),
+    CONSTRAINT ItemFKs CHECK (
+        (
+            (CASE WHEN bookISBN IS NULL THEN 0 ELSE 1 END) +
+            (CASE WHEN cdISSN IS NULL THEN 0 ELSE 1 END) +
+            (CASE WHEN dvdISSN IS NULL THEN 0 ELSE 1 END)
+        ) = 1
+    )
+);
+
+CREATE TABLE Book (
+    ISBN13 CHAR(14) NOT NULL,
+    price DEC(5, 2) NOT NULL,
     dd_num VARCHAR(10),
     title VARCHAR(63) NOT NULL,
     publisher VARCHAR(63),
     language VARCHAR(15),
     picture VARCHAR(255),
-    lib_card_num CHAR(10),
-    FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
-    PRIMARY KEY (item_ID)
-);
-
-CREATE TABLE Book (
-    ISBN13 CHAR(14) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    PRIMARY KEY (item_ID)
+    PRIMARY KEY (ISBN13)
 );
 
 CREATE TABLE DVD (
     ISSN CHAR(12) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    PRIMARY KEY (item_ID)
+    price DEC(5, 2) NOT NULL,
+    dd_num VARCHAR(10),
+    title VARCHAR(63) NOT NULL,
+    publisher VARCHAR(63),
+    language VARCHAR(15),
+    picture VARCHAR(255),
+    PRIMARY KEY (ISSN)
 );
 
 CREATE TABLE CD (
     ISSN CHAR(12) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    PRIMARY KEY (item_ID)
+    price DEC(5, 2) NOT NULL,
+    dd_num VARCHAR(10),
+    title VARCHAR(63) NOT NULL,
+    publisher VARCHAR(63),
+    language VARCHAR(15),
+    picture VARCHAR(255),
+    PRIMARY KEY (ISSN)
 );
 
 CREATE TABLE Reservation(
