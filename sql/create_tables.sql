@@ -3,31 +3,29 @@ CREATE DATABASE project;
 USE project;
 
 CREATE TABLE Member(
-    lib_card_num CHAR(10) NOT NULL,
-    address VARCHAR(100) NOT NULL,
-    email VARCHAR(50) NOT NULL,
-    password VARCHAR(20) NOT NULL,
-    status TINYINT NOT NULL,
-    fines DEC(5, 2) NOT NULL,
-    fName VARCHAR(20) NOT NULL,
-    mName VARCHAR(20),
-    lName VARCHAR(20) NOT NULL,
+    lib_card_num    INT NOT NULL IDENTITY(1, 1),
+    address         VARCHAR(100) NOT NULL,
+    email           VARCHAR(50) NOT NULL,
+    password        VARCHAR(20) NOT NULL,
+    fName           VARCHAR(20) NOT NULL,
+    mName           VARCHAR(20),
+    lName           VARCHAR(20) NOT NULL,
+    
     PRIMARY KEY (lib_card_num)
 );
 
 CREATE TABLE Item (
-    item_ID     CHAR(10) NOT NULL,
-    bookISBN    CHAR(14) NULL,
-    cdISSN      CHAR(12) NULL,
-    dvdISSN     CHAR(12) NULL,
-    quantity TINYINT NOT NULL,
-    availability TINYINT NOT NULL,
+    item_id         INT NOT NULL IDENTITY(1, 1),
+    bookISBN        CHAR(14) NULL,
+    cdISSN          CHAR(12) NULL,
+    dvdISSN         CHAR(12) NULL,
+    availability    TINYINT NOT NULL,
 
     PRIMARY KEY (item_ID),
-    FOREIGN KEY (bookISBN) REFERENCES Book(ISBN13),
-    FOREIGN KEY (cdISSN) REFERENCES CD(ISSN),
-    FOREIGN KEY (dvdISSN) REFERENCES DVD(ISSN),
-    CONSTRAINT ItemFKs CHECK (
+    FOREIGN KEY (bookISBN)  REFERENCES Book(ISBN13),
+    FOREIGN KEY (cdISSN)    REFERENCES CD(ISSN),
+    FOREIGN KEY (dvdISSN)   REFERENCES DVD(ISSN),
+    CONSTRAINT FK_Item CHECK (
         (
             (CASE WHEN bookISBN IS NULL THEN 0 ELSE 1 END) +
             (CASE WHEN cdISSN IS NULL THEN 0 ELSE 1 END) +
@@ -36,95 +34,132 @@ CREATE TABLE Item (
     )
 );
 
+CREATE TABLE Status (
+    -- status is good iff. (fines <= 0 and numOverdueItems == 0).
+    lib_card_num        INT NOT NULL,
+    fine                DEC(5, 2) 0,
+    numOverdueItems     INT 0,
+
+    PRIMARY KEY (lib_card_num),
+    FOREIGN KEY (lib_card_num)  REFERENCES Member(lib_card_num)
+);
+
 CREATE TABLE Book (
-    ISBN13 CHAR(14) NOT NULL,
-    price DEC(5, 2) NOT NULL,
-    dd_num VARCHAR(10),
-    title VARCHAR(63) NOT NULL,
-    publisher VARCHAR(63),
-    language VARCHAR(15),
-    picture VARCHAR(255),
+    ISBN13      CHAR(14) NOT NULL,
+    price       DEC(5, 2) NOT NULL,
+    dd_num      VARCHAR(10),
+    title       VARCHAR(63) NOT NULL,
+    publisher   VARCHAR(63),
+    language    VARCHAR(15),
+    picture     VARCHAR(255),
+
     PRIMARY KEY (ISBN13)
 );
 
 CREATE TABLE DVD (
-    ISSN CHAR(12) NOT NULL,
-    price DEC(5, 2) NOT NULL,
-    dd_num VARCHAR(10),
-    title VARCHAR(63) NOT NULL,
-    publisher VARCHAR(63),
-    language VARCHAR(15),
-    picture VARCHAR(255),
+    ISSN        CHAR(12) NOT NULL,
+    price       DEC(5, 2) NOT NULL,
+    dd_num      VARCHAR(10),
+    title       VARCHAR(63) NOT NULL,
+    publisher   VARCHAR(63),
+    language    VARCHAR(15),
+    picture     VARCHAR(255),
+
     PRIMARY KEY (ISSN)
 );
 
 CREATE TABLE CD (
-    ISSN CHAR(12) NOT NULL,
-    price DEC(5, 2) NOT NULL,
-    dd_num VARCHAR(10),
-    title VARCHAR(63) NOT NULL,
-    publisher VARCHAR(63),
-    language VARCHAR(15),
-    picture VARCHAR(255),
+    ISSN        CHAR(12) NOT NULL,
+    price       DEC(5, 2) NOT NULL,
+    dd_num      VARCHAR(10),
+    title       VARCHAR(63) NOT NULL,
+    publisher   VARCHAR(63),
+    language    VARCHAR(15),
+    picture     VARCHAR(255),
+
     PRIMARY KEY (ISSN)
 );
 
 CREATE TABLE Reservation(
-    item_ID CHAR(10) NOT NULL,
-    reserveDate DATE NOT NULL,
-    lib_card_num CHAR(10) NOT NULL,
-    queueNum TINYINT NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
+    item_ID         INT NOT NULL,
+    reserveDate     DATE NOT NULL,
+    lib_card_num    INT NOT NULL,
+    queueNum        TINYINT NOT NULL,
+
+    FOREIGN KEY (item_ID)       REFERENCES Item(item_ID),
+    FOREIGN KEY (lib_card_num)  REFERENCES Member(lib_card_num),
     CONSTRAINT PK_Reserve PRIMARY KEY (item_ID, reserveDate, lib_card_num, queueNum)
 );
 
 CREATE TABLE LoanedItem(
-    lib_card_num CHAR(10) NOT NULL,
-    borrow_ID BIGINT NOT NULL,
-    timestamp DATETIME NOT NULL,
-    FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
-    PRIMARY KEY (lib_card_num, borrow_ID)
+    lib_card_num    INT NOT NULL,
+    item_id         INT NOT NULL,
+    timestamp       DATETIME NOT NULL,
+
+    PRIMARY KEY (lib_card_num, item_id),
+    FOREIGN KEY (lib_card_num)  REFERENCES Member(lib_card_num),
+    FOREIGN KEY (item_id)       REFERENCES Item(item_id)
 );
 
 CREATE TABLE Authors(
-    author VARCHAR(100) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    CONSTRAINT PK_Author PRIMARY KEY (author, item_ID)
+    author      VARCHAR(100) NOT NULL,
+    bookISBN    CHAR(14) NOT NULL,
+
+    FOREIGN KEY (bookISBN) REFERENCES Book(ISBN13),
+    CONSTRAINT PK_Author PRIMARY KEY (author, bookISBN)
 );
 
 CREATE TABLE DVDActors(
-    actor VARCHAR(100) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    CONSTRAINT PK_DVDActor PRIMARY KEY (actor, item_ID)
+    actor       VARCHAR(100) NOT NULL,
+    dvdISSN     CHAR(12) NOT NULL,
+
+    FOREIGN KEY (dvdISSN) REFERENCES DVD(ISSN),
+    CONSTRAINT PK_DVDActor PRIMARY KEY (actor, dvdISSN)
 );
 
 CREATE TABLE DVDDirectors(
-    director VARCHAR(100) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    CONSTRAINT PK_DVDDirector PRIMARY KEY (director, item_ID)
+    director    VARCHAR(100) NOT NULL,
+    dvdISSN     CHAR(12) NOT NULL,
+
+    FOREIGN KEY (dvdISSN) REFERENCES DVD(ISSN),
+    CONSTRAINT PK_DVDDirector PRIMARY KEY (director, dvdISSN)
 );
 
 CREATE TABLE CDArtist(
-    artist VARCHAR(100) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    CONSTRAINT PK_CDArtist PRIMARY KEY (artist, item_ID)
+    artist      VARCHAR(100) NOT NULL,
+    cdISSN      CHAR(12) NOT NULL,
+
+    FOREIGN KEY (cdISSN) REFERENCES CD(ISSN),
+    CONSTRAINT PK_CDArtist PRIMARY KEY (artist, cdISSN)
 );
 
-CREATE TABLE ItemGenre(
-    genre VARCHAR(15) NOT NULL,
-    item_ID CHAR(10) NOT NULL,
-    FOREIGN KEY (item_ID) REFERENCES Item(item_ID),
-    CONSTRAINT PK_ItemGenre PRIMARY KEY (genre, item_ID)
+CREATE TABLE BookGenre(
+    genre       VARCHAR(15) NOT NULL,
+    bookISBN    CHAR(14) NOT NULL,
+
+    FOREIGN KEY (bookISBN) REFERENCES Book(ISBN13),
+    CONSTRAINT PK_BookGenre PRIMARY KEY (genre, bookISBN)
+);
+
+CREATE TABLE CDGenre(
+    genre       VARCHAR(15) NOT NULL,
+    cdISSN      CHAR(12) NOT NULL,
+
+    FOREIGN KEY (cdISSN) REFERENCES CD(ISSN),
+    CONSTRAINT PK_BookGenre PRIMARY KEY (genre, cdISSN)
+);
+
+CREATE TABLE DVDGenre(
+    genre       VARCHAR(15) NOT NULL,
+    dvdISSN     CHAR(12) NOT NULL,
+
+    FOREIGN KEY (dvdISSN) REFERENCES DVD(ISSN),
+    CONSTRAINT PK_DVDGenre PRIMARY KEY (genre, dvdISSN)
 );
 
 CREATE TABLE MemberPhone(
-    lib_card_num CHAR(10) NOT NULL,
-    phone CHAR(10) NOT NULL,
+    lib_card_num    INT NOT NULL,
+    phone           CHAR(10) NOT NULL,
     FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
     CONSTRAINT PK_MemberPhone PRIMARY KEY (lib_card_num, phone)
 );
