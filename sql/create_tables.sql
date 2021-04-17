@@ -3,7 +3,7 @@ CREATE DATABASE project;
 USE project;
 
 CREATE TABLE Member(
-    lib_card_num    INT NOT NULL IDENTITY(1, 1),
+    lib_card_num    INT NOT NULL AUTO_INCREMENT,
     address         VARCHAR(100) NOT NULL,
     email           VARCHAR(50) NOT NULL,
     password        VARCHAR(20) NOT NULL,
@@ -15,11 +15,11 @@ CREATE TABLE Member(
 );
 
 CREATE TABLE Item (
-    item_id         INT NOT NULL IDENTITY(1, 1),
+    item_id         INT NOT NULL AUTO_INCREMENT,
     bookISBN        CHAR(14) NULL,
     cdISSN          CHAR(12) NULL,
     dvdISSN         CHAR(12) NULL,
-    availability    TINYINT NOT NULL,
+    availability    TINYINT NOT NULL DEFAULT 1,
 
     PRIMARY KEY (item_ID),
     FOREIGN KEY (bookISBN)  REFERENCES Book(ISBN13),
@@ -37,8 +37,8 @@ CREATE TABLE Item (
 CREATE TABLE Status (
     -- status is good iff. (fines <= 0 and numOverdueItems == 0).
     lib_card_num        INT NOT NULL,
-    fine                DEC(5, 2) 0,
-    numOverdueItems     INT 0,
+    fines                DEC(5, 2) DEFAULT 0.0,
+    numOverdueItems     INT DEFAULT 0,
 
     PRIMARY KEY (lib_card_num),
     FOREIGN KEY (lib_card_num)  REFERENCES Member(lib_card_num)
@@ -164,54 +164,57 @@ CREATE TABLE MemberPhone(
     CONSTRAINT PK_MemberPhone PRIMARY KEY (lib_card_num, phone)
 );
 
-INSERT INTO member VALUES
-('1234567890', '123 Flynn St.', 'cooldude@hotmail.com', '123', 1, 0, 'Dude', NULL, 'Smith'),
-('1234567891', '123 Main St.', 'cristian@sfu.ca', '123', 1, 0, 'Cristian', NULL,'John'),
-('1234567892', '123 Street Ave.', 'darebear@gmail.com', 'Seinfeld', 1, 0, 'Darren', NULL, 'Bear'),
-('1234567893', '8888 University Dr.', 'sfu@sfu.ca', 'sfu', 1, 0, 'Kurt', NULL, 'Fraser'),
-('1234567894', '13450 102 Ave.', 'alex@sfu.ca', 'password', 1, 0, 'Alex', NULL, 'Cap');
+INSERT INTO Member (address, email, password, fName, mName, lName) VALUES
+('123 Flynn St.', 'cooldude@hotmail.com', '123', 'Dude', NULL, 'Smith'),
+('123 Main St.', 'cristian@sfu.ca', '123', 'Cristian', NULL,'John'),
+('123 Street Ave.', 'darebear@gmail.com', 'Seinfeld', 'Darren', NULL, 'Bear'),
+('8888 University Dr.', 'sfu@sfu.ca', 'sfu', 'Kurt', NULL, 'Fraser'),
+('13450 102 Ave.', 'alex@sfu.ca', 'password', 'Alex', NULL, 'Cap');
+
+
+INSERT INTO Book (ISBN13, price, title, publisher, language) VALUES
+('978-0553213119', 6.00, 'Moby Dick', 'PBS', 'English'),
+('978-0062073556', 7.00, 'Death on the Nile', 'William Morrow Paperbacks', 'English'),
+('978-0316438988', 12.50, 'Blood of Elves', 'Orbit', 'English'),
+('978-0316219136', 9.50, 'The Time of Contempt', 'Orbit', 'English'),
+('978-0316219181', 12.50, 'Baptism of Fire', 'Orbit', 'English');
+
+INSERT INTO Item (bookISBN) VALUES
+('978-0553213119'),
+('978-0062073556'),
+('978-0316438988'),
+('978-0316219136'),
+('978-0316219181');
+
+
+INSERT INTO DVD (ISSN, price, title, publisher, language) VALUES
+('667068824421', 13.99, 'Shrek', 'DreamWorks', 'English'),
+('678149087321', 5.00, 'Shrek 2', 'DreamWorks', 'English'),
+('505118913383', 5.00, 'Shrek the Third', 'DreamWorks', 'English'),
+('191329061091', 13.99, 'Shrek Forever After', 'DreamWorks', 'English'L),
+('097368523944', 13.99, 'Shrek the Halls', 'DreamWorks', 'English');
+
+INSERT INTO Item (dvdISSN) VALUES
+('667068824421'),
+('678149087321'),
+('505118913383'),
+('191329061091'),
+('097368523944');
+
+
+INSERT INTO CD (ISSN, price, title, publisher, language) VALUES
+('720616246523', 9.99, 'Queen Greatest Hits', 'Hollywood Records', 'English'),
+('602498568279', 9.99, 'Under The Iron Sea', 'Universal Island Records', NULL),
+('602498531785', 9.99, 'Eyes Open', 'Universal Music', NULL),
+('886970382724', 9.99, 'Grammy Nominees 2007', 'Sony BMG Music', NULL),
+('602517581029', 9.99, 'Grammy Nominees 2008', 'Universal Music', NULL);
 
 INSERT INTO Item VALUES
-('0000000001', 6.00, 1, 1, NULL, 'Moby-Dick', 'PBS', NULL, NULL, NULL),
-('0000000002', 7.00, 1, 1, NULL, 'Death on the Nile', 'William Morrow Paperbacks', NULL, NULL, NULL),
-('0000000003', 12.50, 1, 1, NULL, 'Blood of Elves', 'Orbit', NULL, NULL, NULL),
-('0000000004', 9.50, 1, 1, NULL, 'The Time of Contempt', 'Orbit', NULL, NULL, NULL),
-('0000000005', 12.50, 1, 1, NULL, 'Baptism of Fire', 'Orbit', NULL, NULL, NULL);
-
-INSERT INTO Book VALUES
-('978-0553213119', '0000000001'),
-('978-0062073556', '0000000002'),
-('978-0316438988', '0000000003'),
-('978-0316219136', '0000000004'),
-('978-0316219181', '0000000005');
-
-INSERT INTO Item VALUES
-('0000000006', 13.99, 1, 1, NULL, 'Shrek', 'DreamWorks', NULL, NULL, NULL),
-('0000000007', 5.00, 1, 1, NULL, 'Shrek 2', 'DreamWorks', NULL, NULL, NULL),
-('0000000008', 5.00, 1, 1, NULL, 'Shrek the Third', 'DreamWorks', NULL, NULL, NULL),
-('0000000009', 13.99, 1, 1, NULL, 'Shrek Forever After', 'DreamWorks', NULL, NULL, NULL),
-('0000000010', 13.99, 1, 1, NULL, 'Shrek the Halls', 'DreamWorks', NULL, NULL, NULL);
-
-INSERT INTO DVD VALUES
-('667068824421', '0000000006'),
-('678149087321', '0000000007'),
-('505118913383', '0000000008'),
-('191329061091', '0000000009'),
-('097368523944', '0000000010');
-
-INSERT INTO Item VALUES
-('0000000011', 9.99, 1, 1, NULL, 'Queen Greatest Hits', 'Hollywood Records', NULL, NULL, NULL),
-('0000000012', 9.99, 1, 1, NULL, 'Under The Iron Sea', 'Universal Island Records', NULL, NULL, NULL),
-('0000000013', 9.99, 1, 1, NULL, 'Eyes Open', 'Universal Music', NULL, NULL, NULL),
-('0000000014', 9.99, 1, 1, NULL, 'Grammy Nominees 2007', 'Sony BMG Music', NULL, NULL, NULL),
-('0000000015', 9.99, 1, 1, NULL, 'Grammy Nominees 2008', 'Universal Music', NULL, NULL, NULL);
-
-INSERT INTO CD VALUES
-('720616246523', '0000000011'),
-('602498568279', '0000000012'),
-('602498531785', '0000000013'),
-('886970382724', '0000000014'),
-('602517581029', '0000000015');
+('720616246523'),
+('602498568279'),
+('602498531785'),
+('886970382724'),
+('602517581029');
 
 INSERT INTO Reservation VALUES
 ('0000000001', '2021-01-01', '1234567890', 1),
