@@ -70,7 +70,8 @@ CREATE TABLE Item (
     )
 );
 
-CREATE TABLE Status (
+CREATE TABLE MemberStatus (
+    -- When a new Member account is created, ideally there would be a trigger that creates a new row in this table.
     -- status is good iff. (fines <= 0 and numOverdueItems == 0).
     lib_card_num        INT NOT NULL,
     fines                DEC(5, 2) DEFAULT 0.0,
@@ -80,7 +81,7 @@ CREATE TABLE Status (
     FOREIGN KEY (lib_card_num)  REFERENCES Member(lib_card_num)
 );
 
-CREATE TABLE Reservation(
+CREATE TABLE Reservation (
     item_ID         INT NOT NULL,
     reserveDate     DATE NOT NULL,
     lib_card_num    INT NOT NULL,
@@ -91,7 +92,7 @@ CREATE TABLE Reservation(
     CONSTRAINT PK_Reserve PRIMARY KEY (item_ID, reserveDate, lib_card_num, queueNum)
 );
 
-CREATE TABLE LoanedItem(
+CREATE TABLE LoanedItem (
     lib_card_num    INT NOT NULL,
     item_id         INT NOT NULL,
     timestamp       DATETIME NOT NULL,
@@ -101,7 +102,7 @@ CREATE TABLE LoanedItem(
     FOREIGN KEY (item_id)       REFERENCES Item(item_id)
 );
 
-CREATE TABLE Authors(
+CREATE TABLE Authors (
     author      VARCHAR(100) NOT NULL,
     bookISBN    CHAR(14) NOT NULL,
 
@@ -109,7 +110,7 @@ CREATE TABLE Authors(
     CONSTRAINT PK_Author PRIMARY KEY (author, bookISBN)
 );
 
-CREATE TABLE DVDActors(
+CREATE TABLE DVDActors (
     actor       VARCHAR(100) NOT NULL,
     dvdISSN     CHAR(12) NOT NULL,
 
@@ -117,7 +118,7 @@ CREATE TABLE DVDActors(
     CONSTRAINT PK_DVDActor PRIMARY KEY (actor, dvdISSN)
 );
 
-CREATE TABLE DVDDirectors(
+CREATE TABLE DVDDirectors (
     director    VARCHAR(100) NOT NULL,
     dvdISSN     CHAR(12) NOT NULL,
 
@@ -125,7 +126,7 @@ CREATE TABLE DVDDirectors(
     CONSTRAINT PK_DVDDirector PRIMARY KEY (director, dvdISSN)
 );
 
-CREATE TABLE CDArtist(
+CREATE TABLE CDArtist (
     artist      VARCHAR(100) NOT NULL,
     cdISSN      CHAR(12) NOT NULL,
 
@@ -141,7 +142,7 @@ CREATE TABLE BookGenre(
     CONSTRAINT PK_BookGenre PRIMARY KEY (genre, bookISBN)
 );
 
-CREATE TABLE CDGenre(
+CREATE TABLE CDGenre (
     genre       VARCHAR(15) NOT NULL,
     cdISSN      CHAR(12) NOT NULL,
 
@@ -149,7 +150,7 @@ CREATE TABLE CDGenre(
     CONSTRAINT PK_BookGenre PRIMARY KEY (genre, cdISSN)
 );
 
-CREATE TABLE DVDGenre(
+CREATE TABLE DVDGenre (
     genre       VARCHAR(15) NOT NULL,
     dvdISSN     CHAR(12) NOT NULL,
 
@@ -157,7 +158,7 @@ CREATE TABLE DVDGenre(
     CONSTRAINT PK_DVDGenre PRIMARY KEY (genre, dvdISSN)
 );
 
-CREATE TABLE MemberPhone(
+CREATE TABLE MemberPhone (
     lib_card_num    INT NOT NULL,
     phone           CHAR(10) NOT NULL,
     FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
@@ -171,6 +172,14 @@ INSERT INTO Member (address, email, password, fName, mName, lName) VALUES
 ('8888 University Dr.', 'sfu@sfu.ca', 'sfu', 'Kurt', NULL, 'Fraser'),
 ('13450 102 Ave.', 'alex@sfu.ca', 'password', 'Alex', NULL, 'Cap');
 
+-- Ideally this would happen automatically from a trigger.
+INSERT INTO MemberStatus (lib_card_num) VALUES
+(1),
+(2),
+(3),
+(4),
+(5);
+
 
 INSERT INTO Book (ISBN13, price, title, publisher, language) VALUES
 ('978-0553213119', 6.00, 'Moby Dick', 'PBS', 'English'),
@@ -178,6 +187,18 @@ INSERT INTO Book (ISBN13, price, title, publisher, language) VALUES
 ('978-0316438988', 12.50, 'Blood of Elves', 'Orbit', 'English'),
 ('978-0316219136', 9.50, 'The Time of Contempt', 'Orbit', 'English'),
 ('978-0316219181', 12.50, 'Baptism of Fire', 'Orbit', 'English');
+
+INSERT INTO BookGenre (bookISBN, genre) VALUES
+('978-0553213119', 'Fiction'),
+('978-0553213119', 'Adventure'),
+('978-0062073556', 'Fiction'),
+('978-0062073556', 'Mystery'),
+('978-0316438988', 'Fiction'),
+('978-0316438988', 'Fantasy'),
+('978-0316219136', 'Fiction'),
+('978-0316219136', 'Fantasy'),
+('978-0316219181', 'Fiction'),
+('978-0316219181', 'Fantasy');
 
 INSERT INTO Item (bookISBN) VALUES
 ('978-0553213119'),
@@ -194,6 +215,18 @@ INSERT INTO DVD (ISSN, price, title, publisher, language) VALUES
 ('191329061091', 13.99, 'Shrek Forever After', 'DreamWorks', 'English'),
 ('097368523944', 13.99, 'Shrek the Halls', 'DreamWorks', 'English');
 
+INSERT INTO DVDGenre (genre, dvdISSN) VALUES
+('Comedy', '667068824421'),
+('Comedy', '678149087321'),
+('Comedy', '505118913383'),
+('Comedy', '191329061091'),
+('Comedy', '097368523944'),
+('Animation', '667068824421'),
+('Animation', '678149087321'),
+('Animation', '505118913383'),
+('Animation', '191329061091'),
+('Animation', '097368523944');
+
 INSERT INTO Item (dvdISSN) VALUES
 ('667068824421'),
 ('678149087321'),
@@ -209,6 +242,18 @@ INSERT INTO CD (ISSN, price, title, publisher, language) VALUES
 ('886970382724', 9.99, 'Grammy Nominees 2007', 'Sony BMG Music', NULL),
 ('602517581029', 9.99, 'Grammy Nominees 2008', 'Universal Music', NULL);
 
+INSERT INTO CDGenre (cdISSN, genre) VALUES
+('720616246523', 'Music'),
+('720616246523', 'Rock'),
+('602498568279', 'Music'),
+('602498568279', 'Rock'),
+('602498531785', 'Music'),
+('602498531785', 'Rock'),
+('602498531785', 'Alternative'),
+('886970382724', 'Music'),
+('602517581029', 'Music');
+
+
 INSERT INTO Item (cdISSN) VALUES
 ('720616246523'),
 ('602498568279'),
@@ -216,59 +261,53 @@ INSERT INTO Item (cdISSN) VALUES
 ('886970382724'),
 ('602517581029');
 
--- INSERT INTO Reservation VALUES
--- ('0000000001', '2021-01-01', '1234567890', 1),
--- ('0000000002', '2021-02-02', '1234567890', 1),
--- ('0000000006', '2021-03-03', '1234567890', 1),
--- ('0000000007', '2021-03-03', '1234567890', 1),
--- ('0000000011', '2021-03-03', '1234567890', 1);
 
--- INSERT INTO LoanedItem VALUES
--- ('1234567891', 1, '2021-03-04 10:00:00'),
--- ('1234567891', 2, '2021-03-04 10:00:00'),
--- ('1234567891', 3, '2021-03-04 10:00:00'),
--- ('1234567891', 4, '2021-03-04 10:00:00'),
--- ('1234567891', 5, '2021-03-04 10:00:00');
+INSERT INTO Reservation (item_id, reserveDate, lib_card_num, queueNum) VALUES
+(5, '2021-01-01', 2, 1),
+(4, '2021-02-02', 2, 1),
+(3, '2021-03-03', 2, 1),
+(2, '2021-03-03', 2, 1),
+(11, '2021-03-03', 2, 1);
 
--- INSERT INTO Authors VALUES
--- ('Herman Melville', '0000000001'),
--- ('Agatha Christie', '0000000002'),
--- ('Andrzej Sapkowski', '0000000003'),
--- ('Andrzej Sapkowski', '0000000004'),
--- ('Andrzej Sapkowski', '0000000005');
+INSERT INTO LoanedItem VALUES
+(3, 1, '2021-03-04 10:00:00'),
+(3, 2, '2021-03-04 10:00:00'),
+(3, 3, '2021-03-04 10:00:00'),
+(3, 4, '2021-03-04 10:00:00'),
+(3, 5, '2021-03-04 10:00:00');
 
--- INSERT INTO DVDActors VALUES
--- ('Mike Myers', '0000000006'),
--- ('Eddie Murphy', '0000000006'),
--- ('Cameron Diaz', '0000000006'),
--- ('John Lithgow', '0000000006'),
--- ('Vincent Cassel', '0000000006');
+INSERT INTO Authors (author, bookISBN) VALUES
+('Herman Melville', '978-0553213119'),
+('Agatha Christie', '978-0062073556'),
+('Andrzej Sapkowski', '978-0316438988'),
+('Andrzej Sapkowski', '978-0316219136'),
+('Andrzej Sapkowski', '978-0316219181');
 
--- INSERT INTO DVDDirectors VALUES
--- ('Andrew Adamson', '0000000006'),
--- ('Vicky Jenson', '0000000006'),
--- ('Kelly Asbury', '0000000007'),
--- ('Conrad Vernon', '0000000007'),
--- ('Chris Miller', '0000000008'),
--- ('Raman Hui', '0000000008');
+INSERT INTO DVDActors (actor, dvdISSN) VALUES
+('Mike Myers', '678149087321'),
+('Eddie Murphy', '678149087321'),
+('Cameron Diaz', '678149087321'),
+('John Lithgow', '678149087321'),
+('Vincent Cassel', '678149087321');
 
--- INSERT INTO CDArtist VALUES
--- ('Queen', '0000000011'),
--- ('Keane', '0000000012'),
--- ('Snow Patrol', '0000000013'),
--- ('Varius Artists', '0000000014'),
--- ('Varius Artists', '0000000015');
+INSERT INTO DVDDirectors (director, dvdISSN) VALUES
+('Andrew Adamson', '678149087321'),
+('Vicky Jenson', '678149087321'),
+('Kelly Asbury', '505118913383'),
+('Conrad Vernon', '505118913383'),
+('Chris Miller', '191329061091'),
+('Raman Hui', '191329061091');
 
--- INSERT INTO ItemGenre VALUES
--- ('Comedy', '0000000006'),
--- ('Comedy', '0000000007'),
--- ('Comedy', '0000000008'),
--- ('Comedy', '0000000009'),
--- ('Comedy', '0000000010');
+INSERT INTO CDArtist (artist, cdISSN) VALUES
+('Queen', '720616246523'),
+('Keane', '602498568279'),
+('Snow Patrol', '602498531785'),
+('Various Artists', '886970382724'),
+('Various Artists', '602517581029');
 
--- INSERT INTO MemberPhone VALUES
--- ('1234567890', '6045551212'),
--- ('1234567891', '6045551213'),
--- ('1234567892', '6045551214'),
--- ('1234567893', '6045551215'),
--- ('1234567894', '6045551216');
+INSERT INTO MemberPhone (lib_card_num, phone) VALUES
+(1, '6045551212'),
+(2, '6045551213'),
+(3, '6045551214'),
+(4, '6045551215'),
+(5, '6045551216');
