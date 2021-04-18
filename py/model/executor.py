@@ -69,7 +69,6 @@ class Executor:
 
     def insert(self, tableName, values):
         '''Inserts the tuple(s) "values" into the table "tableName".'''
-        # self.__validateTableName(tableName)
         self.__validateValuesType(values)
 
         if self.hasTuple(values):

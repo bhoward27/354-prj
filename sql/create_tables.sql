@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS project;
 CREATE DATABASE project;
 USE project;
 
-CREATE TABLE Member(
+CREATE TABLE Member (
     lib_card_num    INT NOT NULL AUTO_INCREMENT,
     address         VARCHAR(100) NOT NULL,
     email           VARCHAR(50) NOT NULL,
@@ -71,7 +71,6 @@ CREATE TABLE Item (
 );
 
 CREATE TABLE MemberStatus (
-    -- When a new Member account is created, ideally there would be a trigger that creates a new row in this table.
     -- status is good iff. (fines <= 0 and numOverdueItems == 0).
     lib_card_num        INT NOT NULL,
     fines                DEC(5, 2) DEFAULT 0.0,
@@ -80,6 +79,17 @@ CREATE TABLE MemberStatus (
     PRIMARY KEY (lib_card_num),
     FOREIGN KEY (lib_card_num)  REFERENCES Member(lib_card_num)
 );
+
+CREATE TRIGGER ADD_ROW_TO_STATUS
+AFTER INSERT ON Member
+FOR EACH ROW
+INSERT INTO MemberStatus (lib_card_num) VALUES (NEW.lib_card_num);
+
+CREATE TRIGGER DELETE_STALE_STATUS_ROW
+BEFORE DELETE ON Member
+FOR EACH ROW
+DELETE FROM MemberStatus WHERE lib_card_num = OLD.lib_card_num;
+
 
 CREATE TABLE Reservation (
     item_ID         INT NOT NULL,
@@ -171,14 +181,6 @@ INSERT INTO Member (address, email, password, fName, mName, lName) VALUES
 ('123 Street Ave.', 'darebear@gmail.com', 'Seinfeld', 'Darren', NULL, 'Bear'),
 ('8888 University Dr.', 'sfu@sfu.ca', 'sfu', 'Kurt', NULL, 'Fraser'),
 ('13450 102 Ave.', 'alex@sfu.ca', 'password', 'Alex', NULL, 'Cap');
-
--- Ideally this would happen automatically from a trigger.
-INSERT INTO MemberStatus (lib_card_num) VALUES
-(1),
-(2),
-(3),
-(4),
-(5);
 
 
 INSERT INTO Book (ISBN13, price, title, publisher, language) VALUES

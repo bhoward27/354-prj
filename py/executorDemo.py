@@ -25,13 +25,20 @@ chdir(THIS_FILES_FOLDER)
 # is necessary to re-instantiate the executor.
 exec = Executor()
 
-# INSERT INTO Item ("0000000016", 13.99, 1, 1, NULL, "Shrek", "DreamWorks", "English", NULL, NULL);
 isbn = "978-0-533-3754"
 exec.insert("Book (ISBN13, price, title, publisher, language)", (isbn, 24.00, "Ishmael", "Bantam Books", "English"))
 exec.insert("Item (bookISBN)", (isbn,))
+
+newMember = ("422 2nd St", "bogus@notreal.com", "pepperoni", "Joe", "Blow")
+exec.insert("Member (address, email, password, fName, lName)", newMember)
 # It is also possible to pass as the second argument a tuple of tuples or list of tuples.
 # In that case, it will insert multiple records in one go.
 
-# DELETE FROM Item WHERE item_ID = '0000000016';
-# Uncomment below statement to see if it works.
-# exec.delete("Item", "item_ID = '0000000016'")
+
+
+# Uncomment below statements to see if it works.
+# exec.delete("Member", "lib_card_num = 6")
+# a = "ISBN13 = '" + isbn + "'"
+# b = "bookISBN = '" + isbn + "'"
+# exec.delete("Item", b)
+# exec.delete("Book", a)
