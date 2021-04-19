@@ -22,10 +22,7 @@ def register():
         # TODO: run this in executor.py
         query = "SELECT MAX(lib_card_num) from Member"
         exec.cursor.execute(query)
-        for row in exec.cursor:
-            print(row)
-            lib_card_num = int(row[0])+1
-            print(lib_card_num)
+        lib_card_num = int(exec.cursor[0][0])+1
 
         # Check for NULL values and add default values
         if not form.mName.data:
@@ -59,20 +56,24 @@ def login():
 
 @app.route('/books')
 def books():
-    query = """
-SELECT book.ISBN13, item.*
-FROM project.book
-JOIN project.item ON item.item_id=book.item_id
-"""
+    return catalog('Book', 'ISBN13')
 
-    exec.cursor.execute(query)
+@app.route('/cds')
+def cds():
+    return catalog('CD', 'ISSN')
+
+@app.route('/dvds')
+def dvds():
+    return catalog('DVD', 'ISSN')
+
+def catalog(itemType, query):
+    query = ("SELECT %s, item.* " % query
+             + "FROM %s " % itemType
+             + "JOIN item ON item.item_id=%s.item_id" % itemType)
     
-    print(exec.cursor.column_names)
-    print(exec.cursor.column_names.index('ISBN13'))
-    # for book in exec.cursor:
-    #     print(book)
-    return render_template('books.html', title='Books',
-                           cols=exec.cursor.column_names, books=exec.cursor)
+    exec.cursor.execute(query)
+    return render_template('catalog.html', title=itemType + 's',
+                           cols=exec.cursor.column_names, items=exec.cursor)
 
 
 if __name__ == '__main__':

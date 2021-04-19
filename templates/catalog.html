@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    {% for item in items %}
+        <article class="media content-section">
+            <div class="media-body">
+                <h3>{{ item[cols.index('title')] }}</h3>
+                {% for i in range(cols|length) %}
+                    {% if cols[i] != "title" and cols[i] != "lib_card_num" %}
+                        <div>{{ cols[i] }}: {% if cols[i] == "price" %}${% endif %}{{ item[i] }}</div>
+                    {% endif %}
+                {% endfor %}
+            </div>  
+        </article>
+    {% endfor %}
+{% endblock content %}
