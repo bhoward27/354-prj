@@ -20,20 +20,6 @@
                 {% endif %}
             </div>
             <div class="form-group">
-                {{ form.mName.label(class="form-control-label") }}
-
-                {% if form.mName.errors %}
-                {{ form.mName(class="form-control form-control-lg is-invalid bg-dark text-light") }}
-                <div class="invalid-feedback">
-                    {% for error in form.mName.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-                {% else %}
-                {{ form.mName(class="form-control form-control-lg bg-dark text-light") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
                 {{ form.lName.label(class="form-control-label") }}
 
                 {% if form.lName.errors %}
