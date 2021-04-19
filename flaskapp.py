@@ -56,23 +56,27 @@ def login():
 
 @app.route('/books')
 def books():
-    return catalog('Book', 'ISBN13')
+    return catalog('Book', 'ISBN13', 'bookISBN')
 
 @app.route('/cds')
 def cds():
-    return catalog('CD', 'ISSN')
+    return catalog('CD', 'ISSN', 'cdISSN')
 
 @app.route('/dvds')
 def dvds():
-    return catalog('DVD', 'ISSN')
+    return catalog('DVD', 'ISSN', 'dvdISSN')
 
-def catalog(itemType, query):
-    query = ("SELECT %s, item.* " % query
-             + "FROM %s " % itemType
-             + "JOIN item ON item.item_id=%s.item_id" % itemType)
+def catalog(table, query, itemCol):
+
+    # Flush sql
+    for res in exec.cursor:
+        pass
     
+    query = ("SELECT %s.* FROM item" % (table)
+            + " JOIN %s ON %s=%s" % (table, query, itemCol))
+
     exec.cursor.execute(query)
-    return render_template('catalog.html', title=itemType + 's',
+    return render_template('catalog.html', title=table + 's',
                            cols=exec.cursor.column_names, items=exec.cursor)
 
 
