@@ -183,12 +183,12 @@ INSERT INTO Member (address, email, password, fName, mName, lName) VALUES
 ('13450 102 Ave.', 'alex@sfu.ca', 'password', 'Alex', NULL, 'Cap');
 
 
-INSERT INTO Book (ISBN13, price, title, publisher, language) VALUES
-('978-0553213119', 6.00, 'Moby Dick', 'PBS', 'English'),
-('978-0062073556', 7.00, 'Death on the Nile', 'William Morrow Paperbacks', 'English'),
-('978-0316438988', 12.50, 'Blood of Elves', 'Orbit', 'English'),
-('978-0316219136', 9.50, 'The Time of Contempt', 'Orbit', 'English'),
-('978-0316219181', 12.50, 'Baptism of Fire', 'Orbit', 'English');
+INSERT INTO Book (ISBN13, price, title, publisher, language, picture) VALUES
+('978-0553213119', 6.00, 'Moby Dick', 'PBS', 'English', 'https://upload.wikimedia.org/wikipedia/commons/3/36/Moby-Dick_FE_title_page.jpg'),
+('978-0062073556', 7.00, 'Death on the Nile', 'William Morrow Paperbacks', 'English', 'https://upload.wikimedia.org/wikipedia/en/9/96/Death_on_the_Nile_First_Edition_Cover_1937.jpg'),
+('978-0316438988', 12.50, 'Blood of Elves', 'Orbit', 'English', 'https://upload.wikimedia.org/wikipedia/en/6/61/Blood_of_Elves_UK.jpg'),
+('978-0316219136', 9.50, 'The Time of Contempt', 'Orbit', 'English', 'https://upload.wikimedia.org/wikipedia/en/4/48/Time_of_Contempt_UK.jpg'),
+('978-0316219181', 12.50, 'Baptism of Fire', 'Orbit', 'English', 'https://upload.wikimedia.org/wikipedia/en/3/35/Baptism_of_Fire_UK.jpg');
 
 INSERT INTO BookGenre (bookISBN, genre) VALUES
 ('978-0553213119', 'Fiction'),
@@ -210,12 +210,12 @@ INSERT INTO Item (bookISBN) VALUES
 ('978-0316219181');
 
 
-INSERT INTO DVD (ISSN, price, title, publisher, language) VALUES
-('667068824421', 13.99, 'Shrek', 'DreamWorks', 'English'),
-('678149087321', 5.00, 'Shrek 2', 'DreamWorks', 'English'),
-('505118913383', 5.00, 'Shrek the Third', 'DreamWorks', 'English'),
-('191329061091', 13.99, 'Shrek Forever After', 'DreamWorks', 'English'),
-('097368523944', 13.99, 'Shrek the Halls', 'DreamWorks', 'English');
+INSERT INTO DVD (ISSN, price, title, publisher, language, picture) VALUES
+('667068824421', 13.99, 'Shrek', 'DreamWorks', 'English', 'https://upload.wikimedia.org/wikipedia/en/3/39/Shrek.jpg'),
+('678149087321', 5.00, 'Shrek 2', 'DreamWorks', 'English', 'https://upload.wikimedia.org/wikipedia/en/b/b9/Shrek_2_poster.jpg'),
+('505118913383', 5.00, 'Shrek the Third', 'DreamWorks', 'English', 'https://upload.wikimedia.org/wikipedia/en/0/01/Shrek_the_third_ver2.jpg'),
+('191329061091', 13.99, 'Shrek Forever After', 'DreamWorks', 'English', 'https://upload.wikimedia.org/wikipedia/en/7/75/Shrek_forever_after_ver8.jpg'),
+('097368523944', 13.99, 'Shrek the Halls', 'DreamWorks', 'English', 'https://upload.wikimedia.org/wikipedia/en/b/b7/Shrek_the_Halls_poster.jpg');
 
 INSERT INTO DVDGenre (genre, dvdISSN) VALUES
 ('Comedy', '667068824421'),
@@ -237,12 +237,12 @@ INSERT INTO Item (dvdISSN) VALUES
 ('097368523944');
 
 
-INSERT INTO CD (ISSN, price, title, publisher, language) VALUES
-('720616246523', 9.99, 'Queen Greatest Hits', 'Hollywood Records', 'English'),
-('602498568279', 9.99, 'Under The Iron Sea', 'Universal Island Records', NULL),
-('602498531785', 9.99, 'Eyes Open', 'Universal Music', NULL),
-('886970382724', 9.99, 'Grammy Nominees 2007', 'Sony BMG Music', NULL),
-('602517581029', 9.99, 'Grammy Nominees 2008', 'Universal Music', NULL);
+INSERT INTO CD (ISSN, price, title, publisher, language, picture) VALUES
+('720616246523', 9.99, 'Queen Greatest Hits', 'Hollywood Records', 'English', 'https://upload.wikimedia.org/wikipedia/en/0/02/Queen_Greatest_Hits.png'),
+('602498568279', 9.99, 'Under The Iron Sea', 'Universal Island Records', 'English', 'https://upload.wikimedia.org/wikipedia/en/1/13/Keane_Iron_Sea.jpg'),
+('602498531785', 9.99, 'Eyes Open', 'Universal Music', 'English', 'https://upload.wikimedia.org/wikipedia/en/a/af/Speyesopen.jpg'),
+('886970382724', 9.99, 'Grammy Nominees 2007', 'Sony BMG Music', 'English', 'https://cdn-s3.allmusic.com/release-covers/500/0000/678/0000678752.jpg'),
+('602517581029', 9.99, 'Grammy Nominees 2008', 'Universal Music', 'English', 'http://cps-static.rovicorp.com/3/JPG_500/MI0000/011/MI0000011109.jpg?partner=allrovi.com');
 
 INSERT INTO CDGenre (cdISSN, genre) VALUES
 ('720616246523', 'Music'),
