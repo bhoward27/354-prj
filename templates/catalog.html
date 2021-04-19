@@ -4,12 +4,19 @@
     {% for item in items %}
         <article class="media content-section">
             <div class="media-body">
-                <h3>{{ item[cols.index('title')] }}</h3>
-                {% for i in range(cols|length) %}
-                    {% if cols[i] != "title" and cols[i] != "lib_card_num" %}
+                <div class="row">
+                    <div class="col-8">
+                        <h3>{{ item[cols.index('title')] }}</h3>
+                        {% for i in range(cols|length) %}
+                        {% if item[i] != None %}
+                        {% if cols[i] != "title" and cols[i] != "picture" and cols[i] != "lib_card_num" %}
                         <div>{{ cols[i] }}: {% if cols[i] == "price" %}${% endif %}{{ item[i] }}</div>
-                    {% endif %}
-                {% endfor %}
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <img class="col-4" src="{{ item[cols.index('picture')] }}">
+                </div>
             </div>  
         </article>
     {% endfor %}
