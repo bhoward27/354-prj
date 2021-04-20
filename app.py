@@ -81,7 +81,7 @@ def login():
             data = cur.fetchone()
             password = data['password']
             getname = data['fName']
-            lib_card=data['lib_card_data']
+            #lib_card=data['lib_card_data']
             # compares entered password to stored password
             if password_cadidate == password:
                 session['loggedin'] = True
@@ -111,26 +111,6 @@ def logout():
     session.clear()
     flash("logged out", 'success')
     return redirect(url_for('login'))
-
-
-
-def reserve(form):
-        title = StringField('Title', [validators.Length(min=1, max=20)])
-        body = TextAreaField('Body', [validators.Length(min=30)])
-
-@app.route('/reserve', methods=['GET', 'POST'])
-def reservation():
-        form=reserve(request.form)
-        if(request.method)=='POST' and form.validate():
-            title=form.title.data
-            body=form.body.data
-            cur=mysql.connection.cursor()
-            cur.execute("INSERT INTO reservation(item_ID, reserveDate, lib_card_num, queueNUM) VALUES(%s, %s, %s, %s)",(item_ID, reserveDate, lib_card_num, queueNum))
-            mysql.connection.commit()
-            cur.close()
-            flash("Book reserved", 'Success')
-            redirect(url_for('successlogin'))
-        return render_template(reservation, form=form)
 
 
 app.secret_key = '123412312321'
