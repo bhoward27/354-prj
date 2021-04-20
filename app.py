@@ -4,6 +4,7 @@ from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 
 app = Flask(__name__)
 
+
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'password'
@@ -72,6 +73,7 @@ def item(item, table, pk, id, details):
         cur.execute(query)
         details[det] = cur.fetchall()
 
+    cur.close()
     return render_template(
         'item.html', title=res['title'], item=res, details=details
     )
@@ -128,12 +130,13 @@ def login():
             data = cur.fetchone()
             password = data['password']
             getname = data['fName']
-            # lib_card=data['lib_card_data']
+            lib_card = data['lib_card_num']
             # compares entered password to stored password
             if password_cadidate == password:
                 session['loggedin'] = True
                 session['email'] = email
                 session['name'] = getname
+                session['id'] = lib_card
                 flash("Logged in successfully", 'success')
                 return redirect(url_for('successlogin'))
             else:
@@ -149,7 +152,57 @@ def login():
 # page right after log in
 @app.route('/account')
 def successlogin():
-    return render_template('account.html')
+
+    query = (
+        f"SELECT item_id, book.* FROM item"
+        f" JOIN book on bookISBN=ISBN13"
+        f" WHERE bookISBN in ("
+            f"SELECT bookISBN FROM loaneditem"
+            f" JOIN item ON loaneditem.item_id=item.item_id"
+            f" WHERE lib_card_num)"
+            f" ORDER BY item_id"
+    )
+    cur = mysql.connection.cursor()
+    res = cur.execute(query)
+
+    books = ''
+    if res > 0:
+        books = cur.fetchall()
+    
+    query = (
+        f"SELECT item_id, cd.* FROM item"
+        f" JOIN cd on cdISSN=ISSN"
+        f" WHERE cdISSN in ("
+            f"SELECT cdISSN FROM loaneditem"
+            f" JOIN item ON loaneditem.item_id=item.item_id"
+            f" WHERE lib_card_num)"
+            f" ORDER BY item_id"
+    )
+    cur = mysql.connection.cursor()
+    res = cur.execute(query)
+
+    cds = ''
+    if res > 0:
+        cds = cur.fetchall()
+    
+    query = (
+        f"SELECT item_id, dvd.* FROM item"
+        f" JOIN dvd on dvdISSN=ISSN"
+        f" WHERE dvdISSN in ("
+            f"SELECT dvdISSN FROM loaneditem"
+            f" JOIN item ON loaneditem.item_id=item.item_id"
+            f" WHERE lib_card_num)"
+            f" ORDER BY item_id"
+    )
+    cur = mysql.connection.cursor()
+    res = cur.execute(query)
+
+    dvds = ''
+    if res > 0:
+        dvds = cur.fetchall()
+    
+    cur.close()
+    return render_template('account.html', books=books, cds=cds, dvds=dvds)
 
 
 # logout instructions
@@ -185,6 +238,7 @@ def catalog(item, table, pk):
     cur = mysql.connection.cursor()
     cur.execute(query)
     res = cur.fetchall()
+    cur.close()
     return render_template('catalog.html', title=f'{table}s', results=res)
 
 
