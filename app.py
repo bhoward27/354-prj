@@ -111,7 +111,7 @@ def register():
         mysql.connection.commit()
         cur.close()
         flash("You are now registed and can log in", 'Success')
-        redirect(url_for('index'))
+        return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
 
@@ -147,9 +147,9 @@ def login():
 
 
 # page right after log in
-@app.route('/successlogin')
+@app.route('/account')
 def successlogin():
-    return render_template('successlog.html')
+    return render_template('account.html')
 
 
 # logout instructions
