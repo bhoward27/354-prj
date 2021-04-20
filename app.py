@@ -1,5 +1,4 @@
 from flask import Flask, render_template, flash, redirect, url_for, logging, request, session
-from books import Books
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 
@@ -12,7 +11,6 @@ app.config['MYSQL_DB'] = 'project'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 mysql = MySQL(app)
 print(mysql)
-Books = Books()
 
 
 @app.route('/')
@@ -25,14 +23,55 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/books')
-def books():
-    return render_template('Books.html', books=Books)
-
-
-@app.route('/book/<string:id>/')
+@app.route('/books/<string:id>/')
 def book(id):
-    return render_template('Book.html', id=id)
+    details = {
+        'author': 'authors',
+        'genre': 'bookgenre'
+    }
+    return item('bookISBN', 'Book', 'ISBN13', id, details)
+
+
+@app.route('/cds/<string:id>/')
+def cd(id):
+    details = {
+        'artist': 'cdartist',
+        'genre': 'cdgenre'
+    }
+    return item('cdISSN', 'CD', 'ISSN', id, details)
+
+
+@app.route('/dvds/<string:id>/')
+def dvd(id):
+    details = {
+        'actor': 'dvdactors',
+        'director': 'dvddirectors',
+        'genre': 'dvdgenre'
+    }
+    return item('dvdISSN', 'DVD', 'ISSN', id, details)
+
+
+def item(item, table, pk, id, details):
+    cur = mysql.connection.cursor()
+    query = (
+        f"SELECT item_id, {table}.* FROM item"
+        f" JOIN {table} ON {item}={pk}"
+        f" WHERE item_id={id}")
+    cur.execute(query)
+    res = cur.fetchone()
+
+    for det in details:
+        query = (
+            f"SELECT {det} FROM {details[det]}"
+            f" WHERE {item} IN ("
+            f"SELECT {pk} FROM {table}"
+            f" JOIN item ON {item}={pk}"
+            f" WHERE item_id={id})"
+        )
+        cur.execute(query)
+        details[det] = cur.fetchall()
+
+    return render_template('item.html', title=res['title'], item=res, details=details)
 
 
 class RegisterForm(Form):
@@ -81,12 +120,45 @@ def login():
             if password_cadidate == password:
                 app.logger.info('PASSWORD MATCHED')
             else:
-                error="invalid log in"
+                error = "invalid log in"
                 return render_template('login.html', error=error)
         else:
-            error='User not found'
+            error = 'User not found'
             return render_template('login.html', error=error)
     return render_template('login.html')
+
+
+@app.route('/books')
+def books():
+    return catalog('bookISBN', 'Book', 'ISBN13')
+
+
+@app.route('/cds')
+def cds():
+    return catalog('cdISSN', 'CD', 'ISSN')
+
+
+@app.route('/dvds')
+def dvds():
+    return catalog('dvdISSN', 'DVD', 'ISSN')
+
+
+def catalog(item, table, pk):
+
+    query = (
+        f"SELECT item_id, {table}.* FROM item"
+        f" JOIN {table} ON {item}={pk}"
+        f" ORDER BY item_id")
+
+    cur = mysql.connection.cursor()
+    cur.execute(query)
+    res = cur.fetchall()
+    for item in res:
+        print(item)
+        for i in item:
+            print(i)
+            print(item[i])
+    return render_template('catalog.html', title=f'{table}s', results=res)
 
 
 app.secret_key = '123412312321'

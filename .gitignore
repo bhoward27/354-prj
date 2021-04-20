@@ -1,7 +1,7 @@
 .DS_Store
 *.exe
 .vscode
-
+.idea/
 
 
 # What comes below was copied from the internet. 
