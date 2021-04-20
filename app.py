@@ -2,6 +2,7 @@ from flask import Flask, render_template, flash, redirect, url_for, logging, req
 from books import Books
 from flask_mysqldb import MySQL
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
+from datetime import date
 
 app = Flask(__name__)
 
@@ -81,12 +82,13 @@ def login():
             data = cur.fetchone()
             password = data['password']
             getname = data['fName']
-            #lib_card=data['lib_card_data']
+            ses_ID=data['lib_card_num']
             # compares entered password to stored password
             if password_cadidate == password:
-                session['loggedin'] = True
-                session['email'] = email
-                session['name'] = getname
+                session['loggedin'] = True  #session login info (true=logged in else logged out
+                session['email'] = email    #session email
+                session['name'] = getname   #session name
+                session['sess_ID'] = ses_ID #session ID
                 flash("Logged in successfully", 'success')
                 return redirect(url_for('successlogin'))
             else:
@@ -96,20 +98,23 @@ def login():
         else:
             error = 'User not found'
             return render_template('login.html', error=error)
+   # print(session_user_id)
+
     return render_template('login.html')
 
 
-# page right after log in
+# page right after log in (dashborrd
 @app.route('/successlogin')
 def successlogin():
     return render_template('successlog.html')
 
 
-#logout instructions
+# logout instructions
 @app.route('/logout')
 def logout():
     session.clear()
     flash("logged out", 'success')
+
     return redirect(url_for('login'))
 
 
