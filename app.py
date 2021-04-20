@@ -72,7 +72,9 @@ def item(item, table, pk, id, details):
         cur.execute(query)
         details[det] = cur.fetchall()
 
-    return render_template('item.html', title=res['title'], item=res, details=details)
+    return render_template(
+        'item.html', title=res['title'], item=res, details=details
+    )
 
 
 class RegisterForm(Form):
@@ -81,8 +83,11 @@ class RegisterForm(Form):
     phone = StringField('Phone', [validators.Length(min=0, max=10)])
     address = StringField('Address', [validators.Length(min=1, max=50)])
     email = StringField('Email', [validators.Length(min=6, max=50)])
-    password = PasswordField('Password', [validators.DataRequired(),
-                                          validators.EqualTo('confirm', message="The entered passwords do not match")])
+    password = PasswordField(
+        'Password', [validators.DataRequired(),validators.EqualTo(
+            'confirm', message="The entered passwords do not match"
+        )]
+    )
     confirm = PasswordField('Confirm Password')
 
 
@@ -97,24 +102,26 @@ def register():
         password = form.password.data
 
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO Member(address, email, password, fName, lName) VALUES(%s,%s,%s,%s, %s)",
-                    (address, email, password, name, lastname))
-
+        query = (
+            f"INSERT INTO Member(address, email, password, fName, lName) "
+            f"VALUES('{address}','{email}','{password}','{name}','{lastname}')"
+        )
+        cur.execute(query)
         mysql.connection.commit()
         cur.close()
         flash("You are now registed and can log in", 'Success')
         redirect(url_for('index'))
-    return render_template('Register.html', form=form)
+    return render_template('register.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        #        #get form fields
+        # get form fields
         email = request.form['email']
         password_cadidate = request.form['password']
         cur = mysql.connection.cursor()
-        result = cur.execute("SELECT * FROM Member WHERE email=%s", [email])
+        result = cur.execute(f"SELECT * FROM Member WHERE email='{email}'")
         if result > 0:
             data = cur.fetchone()
             password = data['password']
