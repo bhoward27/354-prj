@@ -166,13 +166,6 @@ CREATE TABLE DVDGenre (
     CONSTRAINT PK_DVDGenre PRIMARY KEY (genre, dvdISSN)
 );
 
-CREATE TABLE MemberPhone (
-    lib_card_num    INT NOT NULL,
-    phone           CHAR(10) NOT NULL,
-    FOREIGN KEY (lib_card_num) REFERENCES Member(lib_card_num),
-    CONSTRAINT PK_MemberPhone PRIMARY KEY (lib_card_num, phone)
-);
-
 INSERT INTO Member (address, email, password, fName, lName) VALUES
 ('123 Flynn St.', 'cooldude@hotmail.com', '123', 'Dude', 'Smith'),
 ('123 Main St.', 'cristian@sfu.ca', '123', 'Cristian','John'),
@@ -274,7 +267,8 @@ INSERT INTO LoanedItem VALUES
 (3, 2, '2021-03-04 10:00:00'),
 (3, 3, '2021-03-04 10:00:00'),
 (3, 4, '2021-03-04 10:00:00'),
-(3, 5, '2021-03-04 10:00:00');
+(3, 5, '2021-03-04 10:00:00'),
+(3, 11, '2021-03-04 10:00:00');
 
 INSERT INTO Authors (author, bookISBN) VALUES
 ('Herman Melville', '978-0553213119'),
@@ -309,10 +303,3 @@ INSERT INTO CDArtist (artist, cdISSN) VALUES
 ('Snow Patrol', '602498531785'),
 ('Various Artists', '886970382724'),
 ('Various Artists', '602517581029');
-
-INSERT INTO MemberPhone (lib_card_num, phone) VALUES
-(1, '6045551212'),
-(2, '6045551213'),
-(3, '6045551214'),
-(4, '6045551215'),
-(5, '6045551216');

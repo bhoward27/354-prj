@@ -138,7 +138,7 @@ def login():
                 session['name'] = getname
                 session['id'] = lib_card
                 flash("Logged in successfully", 'success')
-                return redirect(url_for('successlogin'))
+                return redirect(url_for('account'))
             else:
                 error = 'Email/Password Mismatch'
                 return render_template('login.html', error=error)
@@ -151,8 +151,7 @@ def login():
 
 # page right after log in
 @app.route('/account')
-def successlogin():
-
+def account():
     query = (
         f"SELECT item_id, book.* FROM item"
         f" JOIN book on bookISBN=ISBN13"
@@ -160,8 +159,8 @@ def successlogin():
             f"SELECT bookISBN FROM loaneditem"
             f" JOIN item ON loaneditem.item_id=item.item_id"
             f" WHERE lib_card_num)"
-            f" ORDER BY item_id"
     )
+    print(query)
     cur = mysql.connection.cursor()
     res = cur.execute(query)
 
@@ -176,7 +175,6 @@ def successlogin():
             f"SELECT cdISSN FROM loaneditem"
             f" JOIN item ON loaneditem.item_id=item.item_id"
             f" WHERE lib_card_num)"
-            f" ORDER BY item_id"
     )
     cur = mysql.connection.cursor()
     res = cur.execute(query)
@@ -192,7 +190,6 @@ def successlogin():
             f"SELECT dvdISSN FROM loaneditem"
             f" JOIN item ON loaneditem.item_id=item.item_id"
             f" WHERE lib_card_num)"
-            f" ORDER BY item_id"
     )
     cur = mysql.connection.cursor()
     res = cur.execute(query)
@@ -211,6 +208,86 @@ def logout():
     session.clear()
     flash("logged out", 'success')
     return redirect(url_for('login'))
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    session.clear()
+    if request.method == "POST":
+        # get form fields
+        email = request.form['email']
+        password_cadidate = request.form['password']
+        # compares entered password to stored password
+        if email == 'admin@admin.com' and password_cadidate == 'adminpass':
+            flash("Logged in successfully", 'success')
+            return redirect(url_for('admin_console'))
+        else:
+            error = 'Email/Password Mismatch'
+            return render_template('home.html', error=error)
+
+    return render_template('admin.html')
+
+
+@app.route('/admin_console')
+def admin_console():
+    cur = mysql.connection.cursor()
+    query = (
+        f"SELECT COUNT(*) FROM item"
+    )
+    res = cur.execute(query)
+    count = 0
+    if res > 0:
+        count = cur.fetchone()['COUNT(*)']
+    print(count)
+
+    query = (
+        f"SELECT COUNT(*) FROM member"
+    )
+    res = cur.execute(query)
+    members = 0
+    if res > 0:
+        print(res)
+        members = cur.fetchone()['COUNT(*)']
+    print(members)
+
+    cur.close()
+    return render_template('admin-console.html', count=count, members=members)
+
+
+@app.route('/admin_delete', methods=["GET", "POST"])
+def admin_delete():
+    if request.method == "POST":
+        item = request.form['user']
+        query = (
+            f"DELETE FROM member"
+            f" WHERE lib_card_num={item}"
+        )
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        mysql.connection.commit()
+        cur.close()
+        
+        return redirect(url_for('admin_console'));
+    return render_template('admin/delete.html')
+
+
+@app.route('/admin_update', methods=['GET', 'POST'])
+def admin_update():
+    if request.method == "POST":
+        cur = mysql.connection.cursor()
+        member = request.form['id']
+        query = (
+            f"UPDATE Member SET password={request.form['password']}"
+            f" WHERE lib_card_num={member}"
+        )
+        res = cur.execute(query)
+        cur.execute(query)
+        mysql.connection.commit()
+        cur.close()
+        
+        return redirect(url_for('admin_console'));
+
+    return render_template('admin/update.html')
 
 
 @app.route('/books')

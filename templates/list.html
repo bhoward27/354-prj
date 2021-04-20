@@ -3,7 +3,7 @@
     <div class="media-body">
         <div class="row" style="max-height: 200px">
             <div class="col-8">
-                <h3><a href="{{ title|lower }}/{{item['item_id'] }}">{{ item['title'] }}</a></h3>
+                <h3>{{ item['title'] }}</h3>
                 {% for i in item %}
                     {% if item[i] != None %}
                         {% if i != 'title' and i != 'picture' %}
