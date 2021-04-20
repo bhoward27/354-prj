@@ -46,6 +46,7 @@ class RegisterForm(Form):
     confirm = PasswordField('Confirm Password')
 
 
+# registration page
 @app.route('/register', methods=['GET', "POST"])
 def register():
     form = RegisterForm(request.form)
@@ -67,10 +68,11 @@ def register():
     return render_template('Register.html', form=form)
 
 
+# log in page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        #        #get form fields
+        # get form fields
         email = request.form['email']
         password_cadidate = request.form['password']
         cur = mysql.connection.cursor()
@@ -78,15 +80,57 @@ def login():
         if result > 0:
             data = cur.fetchone()
             password = data['password']
+            getname = data['fName']
+            lib_card=data['lib_card_data']
+            # compares entered password to stored password
             if password_cadidate == password:
-                app.logger.info('PASSWORD MATCHED')
+                session['loggedin'] = True
+                session['email'] = email
+                session['name'] = getname
+                flash("Logged in successfully", 'success')
+                return redirect(url_for('successlogin'))
             else:
-                error="invalid log in"
+                error = 'Email/Password Mismatch'
                 return render_template('login.html', error=error)
+            cur.close()
         else:
-            error='User not found'
+            error = 'User not found'
             return render_template('login.html', error=error)
     return render_template('login.html')
+
+
+# page right after log in
+@app.route('/successlogin')
+def successlogin():
+    return render_template('successlog.html')
+
+
+#logout instructions
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("logged out", 'success')
+    return redirect(url_for('login'))
+
+
+
+def reserve(form):
+        title = StringField('Title', [validators.Length(min=1, max=20)])
+        body = TextAreaField('Body', [validators.Length(min=30)])
+
+@app.route('/reserve', methods=['GET', 'POST'])
+def reservation():
+        form=reserve(request.form)
+        if(request.method)=='POST' and form.validate():
+            title=form.title.data
+            body=form.body.data
+            cur=mysql.connection.cursor()
+            cur.execute("INSERT INTO reservation(item_ID, reserveDate, lib_card_num, queueNUM) VALUES(%s, %s, %s, %s)",(item_ID, reserveDate, lib_card_num, queueNum))
+            mysql.connection.commit()
+            cur.close()
+            flash("Book reserved", 'Success')
+            redirect(url_for('successlogin'))
+        return render_template(reservation, form=form)
 
 
 app.secret_key = '123412312321'
