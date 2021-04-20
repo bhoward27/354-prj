@@ -56,7 +56,8 @@ def item(item, table, pk, id, details):
     query = (
         f"SELECT item_id, {table}.* FROM item"
         f" JOIN {table} ON {item}={pk}"
-        f" WHERE item_id={id}")
+        f" WHERE item_id={id}"
+    )
     cur.execute(query)
     res = cur.fetchone()
 
@@ -144,20 +145,15 @@ def dvds():
 
 
 def catalog(item, table, pk):
-
     query = (
         f"SELECT item_id, {table}.* FROM item"
         f" JOIN {table} ON {item}={pk}"
-        f" ORDER BY item_id")
+        f" ORDER BY item_id"
+    )
 
     cur = mysql.connection.cursor()
     cur.execute(query)
     res = cur.fetchall()
-    for item in res:
-        print(item)
-        for i in item:
-            print(i)
-            print(item[i])
     return render_template('catalog.html', title=f'{table}s', results=res)
 
 
