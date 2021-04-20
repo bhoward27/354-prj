@@ -84,13 +84,14 @@ class RegisterForm(Form):
     address = StringField('Address', [validators.Length(min=1, max=50)])
     email = StringField('Email', [validators.Length(min=6, max=50)])
     password = PasswordField(
-        'Password', [validators.DataRequired(),validators.EqualTo(
+        'Password', [validators.DataRequired(), validators.EqualTo(
             'confirm', message="The entered passwords do not match"
         )]
     )
     confirm = PasswordField('Confirm Password')
 
 
+# registration page
 @app.route('/register', methods=['GET', "POST"])
 def register():
     form = RegisterForm(request.form)
@@ -114,6 +115,7 @@ def register():
     return render_template('register.html', form=form)
 
 
+# log in page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -125,15 +127,37 @@ def login():
         if result > 0:
             data = cur.fetchone()
             password = data['password']
+            getname = data['fName']
+            # lib_card=data['lib_card_data']
+            # compares entered password to stored password
             if password_cadidate == password:
-                app.logger.info('PASSWORD MATCHED')
+                session['loggedin'] = True
+                session['email'] = email
+                session['name'] = getname
+                flash("Logged in successfully", 'success')
+                return redirect(url_for('successlogin'))
             else:
-                error = "invalid log in"
+                error = 'Email/Password Mismatch'
                 return render_template('login.html', error=error)
+            cur.close()
         else:
             error = 'User not found'
             return render_template('login.html', error=error)
     return render_template('login.html')
+
+
+# page right after log in
+@app.route('/successlogin')
+def successlogin():
+    return render_template('successlog.html')
+
+
+# logout instructions
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("logged out", 'success')
+    return redirect(url_for('login'))
 
 
 @app.route('/books')
